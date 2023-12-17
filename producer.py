@@ -28,7 +28,7 @@ def send_to_kafka(producer, data):
 
 
 # CSV file path
-csv_file_path = "./credit_card_transactions-ibm_v2.csv"
+csv_file_path = "D:\hoc\HK4_1\XLPTDLTT\data\credit_card_transactions-ibm_v2.csv"
 
 # Read CSV file and send data to Kafka
 with open(csv_file_path, 'r') as file:

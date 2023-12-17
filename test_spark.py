@@ -36,9 +36,13 @@ value_str = kafka_stream_df.selectExpr("CAST(value AS STRING)").alias("value")
 
 # Parse the JSON string into a DataFrame
 parsed_df = value_str.select(from_json("value", schema).alias("data")).select("data.*")
+# Filter for records where 'Is Fraud?' is 'No'
+non_fraud_df = parsed_df.filter("`Is Fraud?` = 'No'")
 
 # Chuyển đổi kiểu dữ liệu cột "Amount"
-parsed_df = parsed_df.withColumn("Amount", regexp_replace("Amount", "\\$", "").cast(FloatType()))
+non_fraud_df = non_fraud_df.withColumn("Amount", regexp_replace("Amount", "\\$", "").cast(FloatType()))
+
+
 """
 # Thực hiện các phép toán trên cột "Amount" (ví dụ: tính tổng)
 result_df = parsed_df.groupBy("Year", "Month", "Day", "Merchant Name")\
@@ -60,7 +64,7 @@ result_df = parsed_df.groupBy("Year", "Month", "Day", "Merchant Name")\
     .withColumnRenamed("count(1)", "Transaction Count")
 """
 # Output the result to the console for testing purposes
-query = parsed_df \
+query = non_fraud_df \
     .writeStream \
     .outputMode("update") \
     .format("console") \
